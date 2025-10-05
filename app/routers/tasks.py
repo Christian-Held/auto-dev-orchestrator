@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from app import deps
 from app.core.logging import get_logger
 from app.db import repo
-from app.workers.job_worker import enqueue_job
+from app.workers.job_worker import execute_job
 
 router = APIRouter(prefix="/tasks", tags=["tasks"])
 logger = get_logger(__name__)
@@ -50,6 +50,6 @@ async def create_task(
         agents_hash=spec.digest,
     )
     session.commit()
-    enqueue_job.delay(job.id)
+    execute_job.delay(job.id)
     logger.info("task_enqueued", job_id=job.id)
     return TaskCreateResponse(job_id=job.id)

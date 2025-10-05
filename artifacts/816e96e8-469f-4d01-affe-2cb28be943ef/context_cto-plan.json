@@ -1,0 +1,26 @@
+{
+  "job_id": "816e96e8-469f-4d01-affe-2cb28be943ef",
+  "step_id": null,
+  "role": "cto-plan",
+  "tokens_final": 182,
+  "tokens_clipped": 0,
+  "compact_ops": 0,
+  "budget": {
+    "budget_tokens": 64000,
+    "reserve_tokens": 8000,
+    "hard_cap_tokens": 70000
+  },
+  "sources": [
+    {
+      "id": "task",
+      "source": "task",
+      "score": 3.399999774035676,
+      "tokens": 12,
+      "metadata": {}
+    }
+  ],
+  "dropped": [],
+  "hints": [
+    "[task score=3.40] Erstelle calculate_fibonacci(n) Funktion mit Tests"
+  ]
+}

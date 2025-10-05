@@ -259,6 +259,7 @@ def execute_job(self, job_id: str):
                 session.commit()
 
             # 4. Budget guard check (after step creation, before expensive LLM call)
+            # Extract job attributes needed for routing (avoid detached instance errors)
             with session_scope() as session:
                 job = repo.get_job(session, job_id)
 
@@ -293,6 +294,13 @@ def execute_job(self, job_id: str):
                         threshold=f"{budget_check.budget_used_pct:.1%}",
                     )
                     session.commit()
+
+                # Extract values for router (before session closes)
+                job_budget_usd = job.budget_usd
+                job_cost_usd = job.cost_usd or 0.0
+                job_model_coder = job.model_coder
+
+            # Initialize coder agent and prepare messages
             coder_agent = CoderAgent(provider_coder, spec, model_coder, settings.dry_run)
             coder_context = json.dumps({"task": job_task, "step": step}, ensure_ascii=False, indent=2)
             coder_prompt = build_prompt(spec.section("CODER-AI"), coder_context)
@@ -310,13 +318,18 @@ def execute_job(self, job_id: str):
             if context_diag:
                 last_context_diag = context_diag
 
-            # Route to optimal model if routing enabled
+            # Route to optimal model if routing enabled (use extracted values, not detached job)
             router = LLMRouter()
             estimated_tokens_in = provider_coder.count_tokens(messages)
             estimated_tokens_out = 2000  # Conservative estimate
 
             routing_decision = router.select_model(
-                step=step, job=job, estimated_tokens_in=estimated_tokens_in, estimated_tokens_out=estimated_tokens_out
+                step=step,
+                budget_usd=job_budget_usd,
+                cost_usd=job_cost_usd,
+                model_coder=job_model_coder,
+                estimated_tokens_in=estimated_tokens_in,
+                estimated_tokens_out=estimated_tokens_out,
             )
 
             model_name = routing_decision.model
@@ -460,18 +473,20 @@ def execute_job(self, job_id: str):
                 agents_hash_diff = (
                     f"{job.agents_hash} -> {spec.digest}" if job and job.agents_hash != spec.digest else "unchanged"
                 )
+                # Extract job.id for use outside session
+                job_display_id = job.id
             repo_ops.push_branch(repo_instance, feature_branch)
             context_report = _format_context_report(last_context_diag)
             pr_body = (
-                f"Job {job.id} completed.\n"
+                f"Job {job_display_id} completed.\n"
                 f"Agents hash current: {spec.digest}\n"
                 f"Agents hash diff: {agents_hash_diff}\n"
                 f"Merge strategy: {settings.merge_conflict_behavior}\n\n"
                 f"{context_report}"
             )
             pr_url = repo_ops.open_pull_request(
-                job_id=job.id,
-                title=f"AutoDev Orchestrator Update {job.id[:8]}",
+                job_id=job_display_id,
+                title=f"AutoDev Orchestrator Update {job_display_id[:8]}",
                 body=pr_body,
                 head=feature_branch,
                 base=job_branch_base,

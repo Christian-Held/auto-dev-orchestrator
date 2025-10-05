@@ -127,6 +127,7 @@ try {
     Write-RunLog 'run' "API Port: $port"
 
     $apiArgs = @('run', 'uvicorn', 'app.main:app', '--host', '0.0.0.0', '--port', $port.ToString())
+    # Worker findet Tasks automatisch via app.workers.celery_app Import
     $workerArgs = @('run', 'celery', '-A', 'app.workers.celery_app', 'worker', '-l', 'info')
 
     Write-RunLog 'run' 'Starte API und Worker (Ctrl+C zum Beenden)...'

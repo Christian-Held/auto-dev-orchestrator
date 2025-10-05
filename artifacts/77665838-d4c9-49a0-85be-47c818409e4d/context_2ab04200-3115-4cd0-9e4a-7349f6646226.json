@@ -1,0 +1,86 @@
+{
+  "job_id": "77665838-d4c9-49a0-85be-47c818409e4d",
+  "step_id": "2ab04200-3115-4cd0-9e4a-7349f6646226",
+  "role": "coder-step",
+  "tokens_final": 2099,
+  "tokens_clipped": 0,
+  "compact_ops": 0,
+  "budget": {
+    "budget_tokens": 64000,
+    "reserve_tokens": 8000,
+    "hard_cap_tokens": 70000
+  },
+  "sources": [
+    {
+      "id": "artifact::context_820da8c9-ae23-4a0a-8d9b-ed146b4055ce.json",
+      "source": "artifact",
+      "score": 31.70543220165011,
+      "tokens": 665,
+      "metadata": {
+        "path": "artifacts/77665838-d4c9-49a0-85be-47c818409e4d/context_820da8c9-ae23-4a0a-8d9b-ed146b4055ce.json"
+      }
+    },
+    {
+      "id": "history::7a34b49a-4af8-4d60-a174-e6b5938b92e7",
+      "source": "history",
+      "score": 29.415649106959343,
+      "tokens": 241,
+      "metadata": {
+        "role": "cto-plan",
+        "step_id": null
+      }
+    },
+    {
+      "id": "step",
+      "source": "step",
+      "score": 26.24297502188919,
+      "tokens": 126,
+      "metadata": {}
+    },
+    {
+      "id": "task",
+      "source": "task",
+      "score": 5.742323126510581,
+      "tokens": 12,
+      "metadata": {}
+    },
+    {
+      "id": "artifact::context_cto-plan.json",
+      "source": "artifact",
+      "score": 3.719245210481247,
+      "tokens": 133,
+      "metadata": {
+        "path": "artifacts/77665838-d4c9-49a0-85be-47c818409e4d/context_cto-plan.json"
+      }
+    },
+    {
+      "id": "history::1210770a-5243-4bd0-99ae-181a61a75b6b",
+      "source": "history",
+      "score": 2.0243910160083884,
+      "tokens": 33,
+      "metadata": {
+        "role": "coder-step",
+        "step_id": "820da8c9-ae23-4a0a-8d9b-ed146b4055ce"
+      }
+    },
+    {
+      "id": "repo::test_fibonacci.py::0",
+      "source": "repo",
+      "score": 0.1887303590996402,
+      "tokens": 4,
+      "metadata": {
+        "path": "test_fibonacci.py"
+      }
+    }
+  ],
+  "dropped": [],
+  "hints": [
+    "[artifact score=31.71] context_820da8c9-ae23-4a0a-8d9b-ed146b4055ce.json: { \"job_id\": \"77665838-d4c9-49a0-85be-47c818409e4d\",",
+    "[history score=29.42] [{\"title\": \"Implementiere die Funktion calculate_fibonacci(n)\", \"rationale\": \"Die Funktion calculate_fibonacci(n) soll die Fibonacci-Zahl an der n-ten Position berechnen. Dies ist der Kern der Aufgabe und die Basis für die weiteren Tests.\", \"acceptance\": \"Die Funktion gibt für ein gegebenes n die korrekte Fibonacci-Zahl zurück, z.B. calculate_fibonacci(0) == 0, calculate_fibonacci(1) == 1, calculate_fibonacci(10) == 55.\", \"complexity\": 3, \"files\": [\"fibonacci.py\"], \"commands\": []}, {\"title\": \"Schreibe Unit-Tests für calculate_fibonacci(n)\", \"rationale\": \"Tests stellen sicher, dass die Funktion korrekt und robust arbeitet. Sie sollten verschiedene Eingaben, Grenzfälle und Fehlerfälle abdecken.\", \"acceptance\": \"Es existieren Unit-Tests, die verschiedene n-Werte prüfen und die korrekten Fibonacci-Zahlen erwarten. Tests werden ausgeführt und bestehen ohne Fehler.\", \"complexity\": 2, \"files\": [\"test_fibonacci.py\"], \"commands\": [\"pytest test_fibonacci.py\"]}]",
+    "[step score=26.24] { \"title\": \"Schreibe Unit-Tests für calculate_fibonacci(n)\", \"rationale\": \"Tests stellen sicher, dass die Funktion korrekt und robust arbeitet. Sie sollten verschiedene Eingaben, Grenzfälle und Fehlerfälle abdecken.\",",
+    "[task score=5.74] Erstelle calculate_fibonacci(n) Funktion mit Tests",
+    "[artifact score=3.72] context_cto-plan.json: { \"job_id\": \"77665838-d4c9-49a0-85be-47c818409e4d\",",
+    "[history score=2.02] Model output: --- /dev/null +++ b/fibonacci.py @@",
+    "[repo score=0.19] test_fibonacci.py:"
+  ]
+}

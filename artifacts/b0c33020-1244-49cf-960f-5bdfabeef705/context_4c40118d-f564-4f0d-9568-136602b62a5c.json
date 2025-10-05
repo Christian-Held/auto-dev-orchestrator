@@ -1,0 +1,55 @@
+{
+  "job_id": "b0c33020-1244-49cf-960f-5bdfabeef705",
+  "step_id": "4c40118d-f564-4f0d-9568-136602b62a5c",
+  "role": "coder-step",
+  "tokens_final": 1225,
+  "tokens_clipped": 0,
+  "compact_ops": 0,
+  "budget": {
+    "budget_tokens": 64000,
+    "reserve_tokens": 8000,
+    "hard_cap_tokens": 70000
+  },
+  "sources": [
+    {
+      "id": "history::81d3e219-c148-4135-9b30-cd552771f6ac",
+      "source": "history",
+      "score": 34.38522167007497,
+      "tokens": 245,
+      "metadata": {
+        "role": "cto-plan",
+        "step_id": null
+      }
+    },
+    {
+      "id": "step",
+      "source": "step",
+      "score": 31.2611578343378,
+      "tokens": 122,
+      "metadata": {}
+    },
+    {
+      "id": "artifact::context_cto-plan.json",
+      "source": "artifact",
+      "score": 6.945914111212037,
+      "tokens": 133,
+      "metadata": {
+        "path": "artifacts/b0c33020-1244-49cf-960f-5bdfabeef705/context_cto-plan.json"
+      }
+    },
+    {
+      "id": "task",
+      "source": "task",
+      "score": 6.935241142481107,
+      "tokens": 12,
+      "metadata": {}
+    }
+  ],
+  "dropped": [],
+  "hints": [
+    "[history score=34.39] [{\"title\": \"Implementiere calculate_fibonacci(n) Funktion\", \"rationale\": \"Die calculate_fibonacci(n) Funktion ist zentral für die Aufgabe. Sie soll die Fibonacci-Zahl an der Position n effizient berechnen.\", \"acceptance\": \"Die Funktion calculate_fibonacci(n) gibt für gültiges n die korrekte Fibonacci-Zahl zurück, z.B. calculate_fibonacci(0) == 0, calculate_fibonacci(1) == 1, calculate_fibonacci(5) == 5.\", \"complexity\": 3, \"files\": [\"fibonacci.py\"], \"commands\": []}, {\"title\": \"Erstelle Unit-Tests für calculate_fibonacci(n)\", \"rationale\": \"Um sicherzustellen, dass die Funktion calculate_fibonacci korrekt funktioniert, werden Unit-Tests benötigt, die verschiedene Eingabewerte und Grenzfälle abdecken.\", \"acceptance\": \"Testabdeckung überprüft die Rückgabewerte von calculate_fibonacci mit typischen Werten wie 0, 1, 2, 10 und einem Grenzfall wie 30. Alle Tests bestehen erfolgreich.\", \"complexity\": 3, \"files\": [\"test_fibonacci.py\"], \"commands\": [\"pytest test_fibonacci.py\"]}]",
+    "[step score=31.26] { \"title\": \"Implementiere calculate_fibonacci(n) Funktion\", \"rationale\": \"Die calculate_fibonacci(n) Funktion ist zentral für die Aufgabe. Sie soll die Fibonacci-Zahl an der Position n effizient berechnen.\",",
+    "[artifact score=6.95] context_cto-plan.json: { \"job_id\": \"b0c33020-1244-49cf-960f-5bdfabeef705\",",
+    "[task score=6.94] Erstelle calculate_fibonacci(n) Funktion mit Tests"
+  ]
+}

@@ -12,8 +12,14 @@ celery_app = Celery(
     backend=settings.redis_url,
 )
 
-celery_app.conf.task_routes = {
-    "app.workers.job_worker.execute_job": {"queue": "jobs"},
-}
+# Configure Celery to auto-discover tasks in app.workers module
+celery_app.conf.update(
+    task_serializer="json",
+    accept_content=["json"],
+    result_serializer="json",
+    timezone="UTC",
+    enable_utc=True,
+)
 
-celery_app.autodiscover_tasks(["app.workers"])
+# Explicitly import tasks to ensure they're registered
+from app.workers import job_worker  # noqa: E402, F401

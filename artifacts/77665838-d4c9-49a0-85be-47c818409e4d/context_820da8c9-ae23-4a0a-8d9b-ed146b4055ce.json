@@ -1,0 +1,55 @@
+{
+  "job_id": "77665838-d4c9-49a0-85be-47c818409e4d",
+  "step_id": "820da8c9-ae23-4a0a-8d9b-ed146b4055ce",
+  "role": "coder-step",
+  "tokens_final": 1226,
+  "tokens_clipped": 0,
+  "compact_ops": 0,
+  "budget": {
+    "budget_tokens": 64000,
+    "reserve_tokens": 8000,
+    "hard_cap_tokens": 70000
+  },
+  "sources": [
+    {
+      "id": "history::7a34b49a-4af8-4d60-a174-e6b5938b92e7",
+      "source": "history",
+      "score": 38.842150767983895,
+      "tokens": 241,
+      "metadata": {
+        "role": "cto-plan",
+        "step_id": null
+      }
+    },
+    {
+      "id": "step",
+      "source": "step",
+      "score": 36.695657305701886,
+      "tokens": 126,
+      "metadata": {}
+    },
+    {
+      "id": "task",
+      "source": "task",
+      "score": 6.340012665629852,
+      "tokens": 12,
+      "metadata": {}
+    },
+    {
+      "id": "artifact::context_cto-plan.json",
+      "source": "artifact",
+      "score": 6.336218601116535,
+      "tokens": 133,
+      "metadata": {
+        "path": "artifacts/77665838-d4c9-49a0-85be-47c818409e4d/context_cto-plan.json"
+      }
+    }
+  ],
+  "dropped": [],
+  "hints": [
+    "[history score=38.84] [{\"title\": \"Implementiere die Funktion calculate_fibonacci(n)\", \"rationale\": \"Die Funktion calculate_fibonacci(n) soll die Fibonacci-Zahl an der n-ten Position berechnen. Dies ist der Kern der Aufgabe und die Basis für die weiteren Tests.\", \"acceptance\": \"Die Funktion gibt für ein gegebenes n die korrekte Fibonacci-Zahl zurück, z.B. calculate_fibonacci(0) == 0, calculate_fibonacci(1) == 1, calculate_fibonacci(10) == 55.\", \"complexity\": 3, \"files\": [\"fibonacci.py\"], \"commands\": []}, {\"title\": \"Schreibe Unit-Tests für calculate_fibonacci(n)\", \"rationale\": \"Tests stellen sicher, dass die Funktion korrekt und robust arbeitet. Sie sollten verschiedene Eingaben, Grenzfälle und Fehlerfälle abdecken.\", \"acceptance\": \"Es existieren Unit-Tests, die verschiedene n-Werte prüfen und die korrekten Fibonacci-Zahlen erwarten. Tests werden ausgeführt und bestehen ohne Fehler.\", \"complexity\": 2, \"files\": [\"test_fibonacci.py\"], \"commands\": [\"pytest test_fibonacci.py\"]}]",
+    "[step score=36.70] { \"title\": \"Implementiere die Funktion calculate_fibonacci(n)\", \"rationale\": \"Die Funktion calculate_fibonacci(n) soll die Fibonacci-Zahl an der n-ten Position berechnen. Dies ist der Kern der Aufgabe und die Basis für die weiteren Tests.\",",
+    "[task score=6.34] Erstelle calculate_fibonacci(n) Funktion mit Tests",
+    "[artifact score=6.34] context_cto-plan.json: { \"job_id\": \"77665838-d4c9-49a0-85be-47c818409e4d\","
+  ]
+}

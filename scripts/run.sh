@@ -76,6 +76,7 @@ trap cleanup EXIT INT TERM
 log 'Starte API und Worker (Ctrl+C zum Beenden)...'
 uv run uvicorn app.main:app --host 0.0.0.0 --port "$APP_PORT" &
 PIDS+=($!)
+# Worker findet Tasks automatisch via app.workers.celery_app Import
 uv run celery -A app.workers.celery_app worker -l info &
 PIDS+=($!)
 

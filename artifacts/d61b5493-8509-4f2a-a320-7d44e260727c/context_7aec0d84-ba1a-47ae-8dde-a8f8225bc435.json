@@ -1,0 +1,55 @@
+{
+  "job_id": "d61b5493-8509-4f2a-a320-7d44e260727c",
+  "step_id": "7aec0d84-ba1a-47ae-8dde-a8f8225bc435",
+  "role": "coder-step",
+  "tokens_final": 1100,
+  "tokens_clipped": 0,
+  "compact_ops": 0,
+  "budget": {
+    "budget_tokens": 64000,
+    "reserve_tokens": 8000,
+    "hard_cap_tokens": 70000
+  },
+  "sources": [
+    {
+      "id": "history::ba45e3f0-3dab-477b-835e-da18a663a78f",
+      "source": "history",
+      "score": 20.957335094849164,
+      "tokens": 200,
+      "metadata": {
+        "role": "cto-plan",
+        "step_id": null
+      }
+    },
+    {
+      "id": "step",
+      "source": "step",
+      "score": 19.006040475215933,
+      "tokens": 111,
+      "metadata": {}
+    },
+    {
+      "id": "task",
+      "source": "task",
+      "score": 4.546958918982347,
+      "tokens": 12,
+      "metadata": {}
+    },
+    {
+      "id": "artifact::context_cto-plan.json",
+      "source": "artifact",
+      "score": 3.702491705768527,
+      "tokens": 133,
+      "metadata": {
+        "path": "artifacts/d61b5493-8509-4f2a-a320-7d44e260727c/context_cto-plan.json"
+      }
+    }
+  ],
+  "dropped": [],
+  "hints": [
+    "[history score=20.96] [{\"title\": \"Implementiere calculate_fibonacci Funktion\", \"rationale\": \"Zuerst wird die Kernfunktion benötigt, die die Fibonacci-Zahl an der n-ten Position berechnet.\", \"acceptance\": \"Die Funktion gibt korrekt die Fibonacci-Zahl zurück für Beispielwerte (z.B. n=0, n=1, n=5, n=10).\", \"complexity\": 3, \"files\": [\"fibonacci.py\"], \"commands\": [\"python -c \\\"import fibonacci; print(fibonacci.calculate_fibonacci(10))\\\"\"]}, {\"title\": \"Schreibe Unit-Tests für calculate_fibonacci\", \"rationale\": \"Tests sichern die Korrektheit der Funktion und verhindern Regressionen bei Änderungen.\", \"acceptance\": \"Tests decken verschiedene Eingaben ab inklusive Grenzwerte, prüfen korrekte Ausgabe und Fehlerbehandlung mit pytest.\", \"complexity\": 3, \"files\": [\"test_fibonacci.py\"], \"commands\": [\"pytest test_fibonacci.py\"]}]",
+    "[step score=19.01] { \"title\": \"Implementiere calculate_fibonacci Funktion\", \"rationale\": \"Zuerst wird die Kernfunktion benötigt, die die Fibonacci-Zahl an der n-ten Position berechnet.\",",
+    "[task score=4.55] Erstelle calculate_fibonacci(n) Funktion mit Tests",
+    "[artifact score=3.70] context_cto-plan.json: { \"job_id\": \"d61b5493-8509-4f2a-a320-7d44e260727c\","
+  ]
+}

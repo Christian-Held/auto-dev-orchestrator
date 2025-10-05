@@ -1,0 +1,55 @@
+{
+  "job_id": "816e96e8-469f-4d01-affe-2cb28be943ef",
+  "step_id": "1d4a4402-e759-46d5-9997-acb9d61f791f",
+  "role": "coder-step",
+  "tokens_final": 1231,
+  "tokens_clipped": 0,
+  "compact_ops": 0,
+  "budget": {
+    "budget_tokens": 64000,
+    "reserve_tokens": 8000,
+    "hard_cap_tokens": 70000
+  },
+  "sources": [
+    {
+      "id": "history::7e9922e0-1072-4c5c-b983-9b5f8e5c3c23",
+      "source": "history",
+      "score": 33.83999417391224,
+      "tokens": 255,
+      "metadata": {
+        "role": "cto-plan",
+        "step_id": null
+      }
+    },
+    {
+      "id": "step",
+      "source": "step",
+      "score": 30.64614654105579,
+      "tokens": 121,
+      "metadata": {}
+    },
+    {
+      "id": "task",
+      "source": "task",
+      "score": 5.734534174420466,
+      "tokens": 12,
+      "metadata": {}
+    },
+    {
+      "id": "artifact::context_cto-plan.json",
+      "source": "artifact",
+      "score": 5.732930446532945,
+      "tokens": 137,
+      "metadata": {
+        "path": "artifacts/816e96e8-469f-4d01-affe-2cb28be943ef/context_cto-plan.json"
+      }
+    }
+  ],
+  "dropped": [],
+  "hints": [
+    "[history score=33.84] [{\"title\": \"Implementiere die calculate_fibonacci(n) Funktion\", \"rationale\": \"Die Funktion berechnet das n-te Fibonacci-Element und ist die Kernanforderung der Aufgabe.\", \"acceptance\": \"Die Funktion gibt korrekt den n-ten Wert der Fibonacci-Folge zurück. Die Eingabe n ist eine nicht-negative ganze Zahl. Beispiele: calculate_fibonacci(0) == 0, calculate_fibonacci(1) == 1, calculate_fibonacci(5) == 5.\", \"complexity\": 3, \"files\": [\"fibonacci.py\"], \"commands\": []}, {\"title\": \"Schreibe Unit-Tests für calculate_fibonacci(n)\", \"rationale\": \"Tests sind notwendig, um sicherzustellen, dass die Funktion korrekt und robust arbeitet, insbesondere für Grenzfälle und übliche Eingaben.\", \"acceptance\": \"Die Tests prüfen mindestens die Eingaben 0, 1, 2, 5, 10 und sowohl kleine als auch größere Werte. Tests prüfen außerdem, dass bei ungültigen Eingaben (z. B. negative Zahlen) eine passende Ausnahme oder Fehlverhalten behandelt wird.\", \"complexity\": 3, \"files\": [\"test_fibonacci.py\"], \"commands\": [\"pytest test_fibonacci.py\"]}]",
+    "[step score=30.65] { \"title\": \"Implementiere die calculate_fibonacci(n) Funktion\", \"rationale\": \"Die Funktion berechnet das n-te Fibonacci-Element und ist die Kernanforderung der Aufgabe.\",",
+    "[task score=5.73] Erstelle calculate_fibonacci(n) Funktion mit Tests",
+    "[artifact score=5.73] context_cto-plan.json: { \"job_id\": \"816e96e8-469f-4d01-affe-2cb28be943ef\","
+  ]
+}

@@ -7,7 +7,6 @@ from typing import Any, Dict
 from app.core.config import get_settings
 from app.core.logging import get_logger
 from app.core.pricing import get_pricing_table
-from app.db.models import JobModel
 from app.llm.provider import estimate_tokens
 
 logger = get_logger(__name__)
@@ -52,7 +51,9 @@ class LLMRouter:
     def select_model(
         self,
         step: Dict[str, Any],
-        job: JobModel,
+        budget_usd: float,
+        cost_usd: float,
+        model_coder: str | None = None,
         estimated_tokens_in: int = 0,
         estimated_tokens_out: int = 0,
     ) -> RoutingDecision:
@@ -61,7 +62,9 @@ class LLMRouter:
 
         Args:
             step: StepPlan dict with optional "complexity" field
-            job: JobModel with budget tracking
+            budget_usd: Total job budget in USD
+            cost_usd: Current cost spent in USD
+            model_coder: Job's configured coder model (optional)
             estimated_tokens_in: Estimated input tokens
             estimated_tokens_out: Estimated output tokens
 
@@ -70,7 +73,7 @@ class LLMRouter:
         """
         if not self.settings.llm_routing_enabled:
             # Fallback to legacy behavior
-            model = job.model_coder or self.settings.model_coder
+            model = model_coder or self.settings.model_coder
             return RoutingDecision(
                 model=model, reason="routing_disabled", complexity_score=5, estimated_cost=0.0
             )
@@ -79,7 +82,7 @@ class LLMRouter:
         complexity = self._get_complexity(step)
 
         # 2. Select base model tier from complexity
-        remaining_budget = job.budget_usd - (job.cost_usd or 0.0)
+        remaining_budget = budget_usd - cost_usd
         candidate_model, reason = self._select_by_complexity(complexity)
 
         # 3. Check if large token count requires upgrade

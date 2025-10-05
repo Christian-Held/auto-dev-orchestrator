@@ -19,20 +19,44 @@ REPOS_DIR = Path("./data/repos")
 def clone_or_update_repo(owner: str, repo_name: str, branch: str, *, force: bool = False) -> Path:
     REPOS_DIR.mkdir(parents=True, exist_ok=True)
     target_path = REPOS_DIR / f"{owner}-{repo_name}"
+    settings = get_settings()
+
+    # Build authenticated URL with GITHUB_TOKEN
+    if settings.github_token:
+        auth_url = f"https://{settings.github_token}@github.com/{owner}/{repo_name}.git"
+    else:
+        auth_url = f"https://github.com/{owner}/{repo_name}.git"
+
     if target_path.exists() and force:
         logger.info("removing_repo", path=str(target_path))
         shutil.rmtree(target_path)
     if target_path.exists():
         repo = Repo(target_path)
+        # Update remote URL to use token authentication
+        if settings.github_token:
+            repo.remotes.origin.set_url(auth_url)
         repo.remotes.origin.fetch()
     else:
-        url = f"https://github.com/{owner}/{repo_name}.git"
-        repo = Repo.clone_from(url, target_path)
-    try:
-        repo.git.checkout(branch)
-    except GitCommandError:
-        repo.git.checkout("origin/" + branch)
-        repo.git.checkout('-b', branch)
+        repo = Repo.clone_from(auth_url, target_path)
+
+    # Check if repo is empty (no branches)
+    if not repo.branches:
+        logger.info("repo_is_empty_initializing", repo=repo_name, branch=branch)
+        # Create initial commit to establish branch
+        readme = target_path / "README.md"
+        readme.write_text(f"# {repo_name}\n\nInitialized by auto-dev-orchestrator")
+        repo.index.add(["README.md"])
+        repo.index.commit("Initial commit")
+        repo.git.branch("-M", branch)
+        repo.git.push("-u", "origin", branch)
+        logger.info("repo_initialized", branch=branch)
+    else:
+        # Normal checkout flow for non-empty repos
+        try:
+            repo.git.checkout(branch)
+        except GitCommandError:
+            repo.git.checkout("origin/" + branch)
+            repo.git.checkout('-b', branch)
     return target_path
 
 

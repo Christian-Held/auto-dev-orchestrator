@@ -1,0 +1,55 @@
+{
+  "job_id": "4960bda9-a7c7-4ac4-b639-312d032fca2e",
+  "step_id": "03bc57fc-0dc1-42c4-a87e-0dd68df9ca3a",
+  "role": "coder-step",
+  "tokens_final": 1135,
+  "tokens_clipped": 0,
+  "compact_ops": 0,
+  "budget": {
+    "budget_tokens": 64000,
+    "reserve_tokens": 8000,
+    "hard_cap_tokens": 70000
+  },
+  "sources": [
+    {
+      "id": "history::4fa2f6ff-ecde-4665-83be-d82d4aaef1d4",
+      "source": "history",
+      "score": 23.635018796408747,
+      "tokens": 213,
+      "metadata": {
+        "role": "cto-plan",
+        "step_id": null
+      }
+    },
+    {
+      "id": "step",
+      "source": "step",
+      "score": 23.019262525469706,
+      "tokens": 108,
+      "metadata": {}
+    },
+    {
+      "id": "task",
+      "source": "task",
+      "score": 5.15101211788235,
+      "tokens": 12,
+      "metadata": {}
+    },
+    {
+      "id": "artifact::context_cto-plan.json",
+      "source": "artifact",
+      "score": 4.314253350218291,
+      "tokens": 133,
+      "metadata": {
+        "path": "artifacts/4960bda9-a7c7-4ac4-b639-312d032fca2e/context_cto-plan.json"
+      }
+    }
+  ],
+  "dropped": [],
+  "hints": [
+    "[history score=23.64] [{\"title\": \"Implement calculate_fibonacci Funktion\", \"rationale\": \"Zuerst muss die Funktion calculate_fibonacci implementiert werden, die die n-te Fibonacci-Zahl berechnet. Dies bildet die Grundlage für alle nachfolgenden Tests.\", \"acceptance\": \"calculate_fibonacci(n) gibt die korrekte n-te Fibonacci-Zahl zurück für typische Werte (z.B. n=0,1,2,10).\", \"complexity\": 3, \"files\": [\"fibonacci.py\"], \"commands\": []}, {\"title\": \"Erstelle Unit-Tests für calculate_fibonacci\", \"rationale\": \"Tests verifizieren die Korrektheit der Implementierung. Es werden Grenzwerte, typische und größere Eingaben getestet.\", \"acceptance\": \"Tests laufen fehlerfrei durch und prüfen verschiedene Eingaben, inkl. n=0, n=1, n=10, große n sowie Fehlermeldungen bei ungültigen Eingaben.\", \"complexity\": 4, \"files\": [\"test_fibonacci.py\"], \"commands\": [\"pytest test_fibonacci.py\"]}]",
+    "[step score=23.02] { \"title\": \"Implement calculate_fibonacci Funktion\", \"rationale\": \"Zuerst muss die Funktion calculate_fibonacci implementiert werden, die die n-te Fibonacci-Zahl berechnet. Dies bildet die Grundlage für alle nachfolgenden Tests.\",",
+    "[task score=5.15] Erstelle calculate_fibonacci(n) Funktion mit Tests",
+    "[artifact score=4.31] context_cto-plan.json: { \"job_id\": \"4960bda9-a7c7-4ac4-b639-312d032fca2e\","
+  ]
+}

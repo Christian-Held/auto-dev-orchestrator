@@ -53,7 +53,13 @@ def test_routing_disabled_uses_fallback(router, job_with_budget):
 
     try:
         step = {"title": "Simple task", "complexity": 2}
-        decision = router.select_model(step, job_with_budget, 500, 500)
+        decision = router.select_model(
+            step,
+            budget_usd=job_with_budget.budget_usd,
+            cost_usd=job_with_budget.cost_usd,
+            estimated_tokens_in=500,
+            estimated_tokens_out=500,
+        )
 
         assert decision.reason == "routing_disabled"
         assert decision.complexity_score == 5  # Default when disabled
@@ -69,7 +75,13 @@ def test_simple_task_routes_to_gpt35(router, job_with_budget):
 
     try:
         step = {"title": "Write boilerplate tests", "complexity": 2}
-        decision = router.select_model(step, job_with_budget, 500, 500)
+        decision = router.select_model(
+            step,
+            budget_usd=job_with_budget.budget_usd,
+            cost_usd=job_with_budget.cost_usd,
+            estimated_tokens_in=500,
+            estimated_tokens_out=500,
+        )
 
         assert decision.model == settings.model_simple
         assert "simple" in decision.reason
@@ -86,7 +98,13 @@ def test_medium_task_routes_to_sonnet(router, job_with_budget):
 
     try:
         step = {"title": "Implement feature", "complexity": 5}
-        decision = router.select_model(step, job_with_budget, 1000, 1000)
+        decision = router.select_model(
+            step,
+            budget_usd=job_with_budget.budget_usd,
+            cost_usd=job_with_budget.cost_usd,
+            estimated_tokens_in=1000,
+            estimated_tokens_out=1000,
+        )
 
         assert decision.model == settings.model_medium
         assert "medium" in decision.reason
@@ -103,7 +121,13 @@ def test_complex_task_routes_to_opus(router, job_with_budget):
 
     try:
         step = {"title": "Redesign database architecture", "complexity": 9}
-        decision = router.select_model(step, job_with_budget, 2000, 3000)
+        decision = router.select_model(
+            step,
+            budget_usd=job_with_budget.budget_usd,
+            cost_usd=job_with_budget.cost_usd,
+            estimated_tokens_in=2000,
+            estimated_tokens_out=3000,
+        )
 
         assert decision.model == settings.model_complex
         assert "complex" in decision.reason
@@ -121,7 +145,13 @@ def test_budget_constraint_downgrades_model(router, job_low_budget):
     try:
         # Complex task that would normally use Opus
         step = {"title": "Complex refactoring", "complexity": 8}
-        decision = router.select_model(step, job_low_budget, 1000, 1000)
+        decision = router.select_model(
+            step,
+            budget_usd=job_low_budget.budget_usd,
+            cost_usd=job_low_budget.cost_usd,
+            estimated_tokens_in=1000,
+            estimated_tokens_out=1000,
+        )
 
         # Should downgrade due to budget
         assert decision.model != settings.model_complex
@@ -141,7 +171,13 @@ def test_large_token_count_upgrades_model(router, job_with_budget):
         step = {"title": "Write tests", "complexity": 2}
         large_tokens = settings.routing_token_threshold_large + 1000
 
-        decision = router.select_model(step, job_with_budget, large_tokens, large_tokens)
+        decision = router.select_model(
+            step,
+            budget_usd=job_with_budget.budget_usd,
+            cost_usd=job_with_budget.cost_usd,
+            estimated_tokens_in=large_tokens,
+            estimated_tokens_out=large_tokens,
+        )
 
         # Should upgrade from simple to medium
         assert decision.model == settings.model_medium
@@ -159,7 +195,13 @@ def test_auto_detect_complexity_from_keywords(router, job_with_budget):
     try:
         # Step without explicit complexity field
         step = {"title": "Write unit tests", "rationale": "Add test coverage"}
-        decision = router.select_model(step, job_with_budget, 500, 500)
+        decision = router.select_model(
+            step,
+            budget_usd=job_with_budget.budget_usd,
+            cost_usd=job_with_budget.cost_usd,
+            estimated_tokens_in=500,
+            estimated_tokens_out=500,
+        )
 
         # Should detect "test" keyword → complexity 1
         assert decision.complexity_score == 1
@@ -179,7 +221,13 @@ def test_auto_detect_architecture_task(router, job_with_budget):
             "title": "Design distributed system architecture",
             "rationale": "Scalability requirements",
         }
-        decision = router.select_model(step, job_with_budget, 2000, 2000)
+        decision = router.select_model(
+            step,
+            budget_usd=job_with_budget.budget_usd,
+            cost_usd=job_with_budget.cost_usd,
+            estimated_tokens_in=2000,
+            estimated_tokens_out=2000,
+        )
 
         # Should detect "architecture" keyword → complexity 7
         assert decision.complexity_score == 7
@@ -207,7 +255,13 @@ def test_complexity_clamped_to_valid_range(router, job_with_budget):
     try:
         # Invalid complexity > 10
         step = {"title": "Test", "complexity": 99}
-        decision = router.select_model(step, job_with_budget, 500, 500)
+        decision = router.select_model(
+            step,
+            budget_usd=job_with_budget.budget_usd,
+            cost_usd=job_with_budget.cost_usd,
+            estimated_tokens_in=500,
+            estimated_tokens_out=500,
+        )
 
         # Should clamp to 10
         assert decision.complexity_score == 10

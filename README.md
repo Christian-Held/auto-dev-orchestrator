@@ -29,6 +29,8 @@ Auto Dev Orchestrator ist ein FastAPI- und Celery-basiertes Grundgerüst, das au
    - **Windows**: `pwsh -File scripts/run.ps1`
    - **Linux**: `./scripts/run.sh`
    Die Skripte laden `.env`, protokollieren den ausgewählten Interpreter und starten `uv run uvicorn app.main:app` sowie `uv run celery -A app.workers.celery_app worker -l info`.
+
+   **Hinweis**: Der Worker findet Tasks automatisch ohne `--include` Flag. Git-Push verwendet automatisch `GITHUB_TOKEN` aus `.env` für Authentication.
 4. Öffne für die Weboberfläche ein neues Terminal und starte `uv run python -m webui.app_gradio`. Die UI läuft unabhängig vom Backend und nutzt dieselben REST-Endpunkte.
 5. Optional kannst du nach erfolgreichem Health-Check die Demo-Seed-Skripte verwenden:
    - **Windows**: `pwsh -File scripts/seed-demo.ps1`
