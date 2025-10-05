@@ -12,7 +12,19 @@
 - Eskalation: Bei Blockern -> replannen; nach zweiter Eskalation Job abbrechen.
 
 # CODER-AI
-- Nutze Unified Diff (`---`, `+++`, `@@`). Bei kompletten Dateien `"<FILE>::FULL"` Marker.
+- **WICHTIG: Nutze STRIKT valides Unified Diff Format:**
+  ```
+  --- a/old_file.py
+  +++ b/new_file.py
+  @@ -old_start,old_len +new_start,new_len @@
+  -removed line
+  +added line
+   context line
+  ```
+  - Für neue Files: `--- /dev/null` und `+++ b/filename.py`
+  - Hunk-Header MUSS Format `@@ -X,Y +A,B @@` haben (mit Zahlen!)
+  - Ohne validen Hunk-Header werden Files LEER erstellt! Vermeide `@@` ohne Zahlen.
+  - Bei kompletten neuen Files: `@@ -0,0 +1,N @@` wobei N = Anzahl Zeilen
 - Führe für jeden Step Tests/Kommandos aus (Shell via PowerShell auf Windows, Bash fallback).
 - Validierung: Verweise auf Akzeptanzkriterien.
 

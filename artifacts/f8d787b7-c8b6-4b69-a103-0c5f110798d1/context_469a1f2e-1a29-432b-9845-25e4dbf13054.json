@@ -1,0 +1,55 @@
+{
+  "job_id": "f8d787b7-c8b6-4b69-a103-0c5f110798d1",
+  "step_id": "469a1f2e-1a29-432b-9845-25e4dbf13054",
+  "role": "coder-step",
+  "tokens_final": 1231,
+  "tokens_clipped": 0,
+  "compact_ops": 0,
+  "budget": {
+    "budget_tokens": 64000,
+    "reserve_tokens": 8000,
+    "hard_cap_tokens": 70000
+  },
+  "sources": [
+    {
+      "id": "history::d44944d2-e303-4879-94f7-3ecce2cef7de",
+      "source": "history",
+      "score": 32.177892298521094,
+      "tokens": 251,
+      "metadata": {
+        "role": "cto-plan",
+        "step_id": null
+      }
+    },
+    {
+      "id": "step",
+      "source": "step",
+      "score": 28.845721723976375,
+      "tokens": 115,
+      "metadata": {}
+    },
+    {
+      "id": "task",
+      "source": "task",
+      "score": 5.736387875573236,
+      "tokens": 12,
+      "metadata": {}
+    },
+    {
+      "id": "artifact::context_cto-plan.json",
+      "source": "artifact",
+      "score": 4.898864913204604,
+      "tokens": 133,
+      "metadata": {
+        "path": "artifacts/f8d787b7-c8b6-4b69-a103-0c5f110798d1/context_cto-plan.json"
+      }
+    }
+  ],
+  "dropped": [],
+  "hints": [
+    "[history score=32.18] [{\"title\": \"Implementiere calculate_fibonacci Funktion\", \"rationale\": \"Die Funktion calculate_fibonacci(n) berechnet die n-te Fibonacci-Zahl. Dies ist die Kernfunktion der Aufgabe.\", \"acceptance\": \"Die Funktion gibt für Eingaben n >= 0 die korrekte n-te Fibonacci-Zahl zurück. Für ungültige Eingaben (z.B. negative Werte) wird eine sinnvolle Fehlermeldung oder Ausnahme generiert.\", \"complexity\": 3, \"files\": [\"fibonacci.py\"], \"commands\": []}, {\"title\": \"Erstelle Unittests für calculate_fibonacci Funktion\", \"rationale\": \"Um die Korrektheit der calculate_fibonacci Funktion sicherzustellen, sind automatisierte Tests notwendig, die verschiedene Fälle prüfen, z.B. kleine Werte, große Werte und Grenzfälle.\", \"acceptance\": \"Testfälle prüfen die Rückgabe für mehrere Werte, insbesondere für n=0, n=1, einige mittlere Werte und einen größeren Wert. Fehlerhafte Eingaben sollten auch durch Tests abgedeckt werden.\", \"complexity\": 4, \"files\": [\"test_fibonacci.py\"], \"commands\": [\"pytest test_fibonacci.py\"]}]",
+    "[step score=28.85] { \"title\": \"Implementiere calculate_fibonacci Funktion\", \"rationale\": \"Die Funktion calculate_fibonacci(n) berechnet die n-te Fibonacci-Zahl. Dies ist die Kernfunktion der Aufgabe.\",",
+    "[task score=5.74] Erstelle calculate_fibonacci(n) Funktion mit Tests",
+    "[artifact score=4.90] context_cto-plan.json: { \"job_id\": \"f8d787b7-c8b6-4b69-a103-0c5f110798d1\","
+  ]
+}

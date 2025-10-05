@@ -427,9 +427,25 @@ def execute_job(self, job_id: str):
             diff_text = result.get("diff", "")
             summary = result.get("summary", "")
             if diff_text:
-                _apply_diff(Path(repo_path), diff_text)
-                if repo_instance is not None:
-                    repo_ops.commit_all(repo_instance, f"{step.get('title', 'Step')}\n\n{summary}")
+                try:
+                    _apply_diff(Path(repo_path), diff_text)
+                    if repo_instance is not None:
+                        repo_ops.commit_all(repo_instance, f"{step.get('title', 'Step')}\n\n{summary}")
+                except ValueError as diff_error:
+                    logger.error("invalid_diff_format", error=str(diff_error), step=step.get("title"))
+                    # Mark step as failed with specific error
+                    with session_scope() as session:
+                        step_model = repo.get_step(session, step_id)
+                        if step_model:
+                            repo.update_step(
+                                session,
+                                step_model,
+                                status="failed",
+                                details=f"Invalid diff format: {str(diff_error)[:200]}"
+                            )
+                        session.commit()
+                    # Continue to next step instead of crashing
+                    continue
             with session_scope() as session:
                 job = repo.get_job(session, job_id)
                 tokens_in = int(result.get("tokens_in", 0) or 0)

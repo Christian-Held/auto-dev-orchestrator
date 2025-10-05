@@ -49,11 +49,16 @@ def apply_unified_diff(base_path: Path, diff_text: str) -> Iterable[Tuple[Path, 
             rebuilt: list[str] = []
             cursor = 0
             i += 1
+
+            # Ensure at least one valid hunk exists
+            found_valid_hunk = False
+
             while i < len(lines) and lines[i].startswith("@@ "):
                 header = lines[i]
                 match = HUNK_RE.match(header)
                 if not match:
-                    raise ValueError(f"Invalid hunk header: {header}")
+                    raise ValueError(f"Invalid hunk header: {header!r}. Expected format: @@ -old_start,old_len +new_start,new_len @@")
+                found_valid_hunk = True
                 old_start = int(match.group("old_start")) - 1
                 if old_start > len(source_lines):
                     old_start = len(source_lines)
@@ -76,11 +81,19 @@ def apply_unified_diff(base_path: Path, diff_text: str) -> Iterable[Tuple[Path, 
                         logger.warning("unknown_diff_line", line=hunk_line)
                     i += 1
                 # continue to next hunk without increment to skip header reprocessing
+
+            # Validate that we found at least one hunk
+            if not found_valid_hunk:
+                raise ValueError(
+                    f"No valid hunks found in diff for {new_path}. "
+                    f"Diff may be malformed or missing hunk headers like '@@ -0,0 +1,10 @@'"
+                )
+
             rebuilt.extend(source_lines[cursor:])
             new_content = "\n".join(rebuilt)
             if original_content.endswith("\n") or diff_text.endswith("\n"):
                 new_content += "\n"
-            logger.info("diff_applied", path=str(target_path))
+            logger.info("diff_applied", path=str(target_path), lines=len(rebuilt))
             yield target_path, new_content
         else:
             i += 1

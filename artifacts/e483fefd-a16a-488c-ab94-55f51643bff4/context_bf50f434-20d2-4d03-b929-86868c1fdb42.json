@@ -1,0 +1,55 @@
+{
+  "job_id": "e483fefd-a16a-488c-ab94-55f51643bff4",
+  "step_id": "bf50f434-20d2-4d03-b929-86868c1fdb42",
+  "role": "coder-step",
+  "tokens_final": 1328,
+  "tokens_clipped": 0,
+  "compact_ops": 0,
+  "budget": {
+    "budget_tokens": 64000,
+    "reserve_tokens": 8000,
+    "hard_cap_tokens": 70000
+  },
+  "sources": [
+    {
+      "id": "history::b9c9991b-25cb-4078-b007-22b88f613375",
+      "source": "history",
+      "score": 35.531072122046595,
+      "tokens": 246,
+      "metadata": {
+        "role": "cto-plan",
+        "step_id": null
+      }
+    },
+    {
+      "id": "step",
+      "source": "step",
+      "score": 32.47258915941519,
+      "tokens": 123,
+      "metadata": {}
+    },
+    {
+      "id": "task",
+      "source": "task",
+      "score": 6.346008311510188,
+      "tokens": 12,
+      "metadata": {}
+    },
+    {
+      "id": "artifact::context_cto-plan.json",
+      "source": "artifact",
+      "score": 5.507997925971297,
+      "tokens": 133,
+      "metadata": {
+        "path": "artifacts/e483fefd-a16a-488c-ab94-55f51643bff4/context_cto-plan.json"
+      }
+    }
+  ],
+  "dropped": [],
+  "hints": [
+    "[history score=35.53] [{\"title\": \"Implementiere die Funktion calculate_fibonacci(n)\", \"rationale\": \"Die fibonacci Funktion berechnet Fibonacci-Zahlen. Zuerst wird die Kernfunktion benötigt, um die Fibonacci-Zahl für ein gegebenes n zu erzeugen.\", \"acceptance\": \"Eine Funktion calculate_fibonacci(n) ist implementiert, die die n-te Fibonacci-Zahl korrekt berechnet. Für Eingaben n=0, n=1, n=5, n=10 gibt sie die korrekten Werte zurück.\", \"complexity\": 3, \"files\": [\"fibonacci.py\"], \"commands\": []}, {\"title\": \"Schreibe Unit-Tests für calculate_fibonacci(n)\", \"rationale\": \"Durch Unit-Tests stellen wir sicher, dass die implementierte Funktion korrekt funktioniert, auch bei Grenzfällen und typischen Eingaben.\", \"acceptance\": \"Es existieren Unit-Tests, die calculate_fibonacci(n) mit verschiedenen Eingabewerten (z. B. 0, 1, 2, 5, 10, negative Werte) auf korrekte Ausgabe testen. Die Tests laufen fehlerfrei durch.\", \"complexity\": 3, \"files\": [\"test_fibonacci.py\"], \"commands\": [\"pytest test_fibonacci.py\"]}]",
+    "[step score=32.47] { \"title\": \"Implementiere die Funktion calculate_fibonacci(n)\", \"rationale\": \"Die fibonacci Funktion berechnet Fibonacci-Zahlen. Zuerst wird die Kernfunktion benötigt, um die Fibonacci-Zahl für ein gegebenes n zu erzeugen.\",",
+    "[task score=6.35] Erstelle calculate_fibonacci(n) Funktion mit Tests",
+    "[artifact score=5.51] context_cto-plan.json: { \"job_id\": \"e483fefd-a16a-488c-ab94-55f51643bff4\","
+  ]
+}
