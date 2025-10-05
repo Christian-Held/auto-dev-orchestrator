@@ -15,6 +15,9 @@ class JobStatus:
     COMPLETED = "completed"
     FAILED = "failed"
     CANCELLED = "cancelled"
+    BUDGET_EXCEEDED = "budget_exceeded"
+    STALLED = "stalled"
+    REPLANNING = "replanning"
 
 
 class JobModel(Base):
@@ -44,6 +47,14 @@ class JobModel(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+    # Loop Detection & Budget Guards
+    retry_count = Column(Integer, default=0)
+    last_failed_step_id = Column(String, nullable=True)
+    consecutive_failures = Column(Integer, default=0)
+    budget_warnings_sent = Column(JSON, default=list)
+    replan_count = Column(Integer, default=0)
+    last_progress_at = Column(DateTime, nullable=True)
+
     steps = relationship("JobStepModel", back_populates="job", cascade="all, delete-orphan")
     costs = relationship("CostEntryModel", back_populates="job", cascade="all, delete-orphan")
 
@@ -60,6 +71,11 @@ class JobStepModel(Base):
     started_at = Column(DateTime, nullable=True)
     finished_at = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
+
+    # Retry & Edit Tracking
+    retry_count = Column(Integer, default=0)
+    edit_history = Column(JSON, default=list)
+    failure_reason = Column(Text, nullable=True)
 
     job = relationship("JobModel", back_populates="steps")
 

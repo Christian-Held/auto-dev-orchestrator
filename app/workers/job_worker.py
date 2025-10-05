@@ -13,6 +13,7 @@ from app.agents.prompts import build_prompt, parse_agents_file
 from app.context.engine import ContextEngine
 from app.core.config import get_settings
 from app.core.diffs import apply_unified_diff, safe_write
+from app.core.guards import BudgetGuard, LoopDetector, StallDetector, BudgetStatus, LoopStatus
 from app.core.logging import get_logger
 from app.core.pricing import get_pricing_table
 from app.db import repo
@@ -23,6 +24,7 @@ from app.llm.litellm_provider import LiteLLMProvider
 from app.llm.openai_provider import OpenAILLMProvider
 from app.llm.provider import BaseLLMProvider, DryRunLLMProvider
 from app.llm.router import LLMRouter
+from app.workers.replanning import trigger_replanning
 
 from .celery_app import celery_app
 
@@ -222,14 +224,75 @@ def execute_job(self, job_id: str):
             repo_path = repo_ops.clone_or_update_repo(job_repo_owner, job_repo_name, job_branch_base)
             repo_instance = repo_ops.Repo(repo_path)
             repo_ops.create_branch(repo_instance, feature_branch, job_branch_base)
+
+        # Initialize guards
+        budget_guard = BudgetGuard()
+        loop_detector = LoopDetector()
+        stall_detector = StallDetector()
+
+        # Record initial progress
+        with session_scope() as session:
+            job = repo.get_job(session, job_id)
+            stall_detector.record_progress(job, session)
+            session.commit()
+
         for step in plan:
             with session_scope() as session:
                 job = repo.get_job(session, job_id)
+
+                # 1. Check if job stalled
+                if stall_detector.check_job_stalled(job):
+                    logger.error("job_stalled", job_id=job_id)
+                    repo.update_job_status(session, job, JobStatus.STALLED)
+                    job.last_action = "Job stalled: no progress timeout"
+                    session.add(job)
+                    session.commit()
+                    return
+
+                # 2. Legacy limit check (will be replaced by budget guard)
                 _check_limits(job, now=datetime.utcnow())
+
+                # 3. Create step first to get step_id for routing
                 step_model = repo.create_step(session, job, step.get("title", "step"), "execution")
                 step_id = step_model.id
                 repo.update_step(session, step_model, status="running")
                 session.commit()
+
+            # 4. Budget guard check (after step creation, before expensive LLM call)
+            with session_scope() as session:
+                job = repo.get_job(session, job_id)
+
+                # Estimate cost for budget check
+                estimated_cost = 0.5  # Conservative estimate, will be refined by router
+
+                budget_check = budget_guard.check_budget(job, estimated_cost)
+
+                if budget_check.should_block:
+                    logger.error(
+                        "budget_exceeded",
+                        job_id=job_id,
+                        budget_used_pct=f"{budget_check.budget_used_pct:.1%}",
+                    )
+                    repo.update_job_status(session, job, JobStatus.BUDGET_EXCEEDED)
+                    job.last_action = f"Budget exceeded: {budget_check.budget_used_pct:.1%} used"
+                    session.add(job)
+
+                    # Mark step as failed
+                    step_model = repo.get_step(session, step_id)
+                    if step_model:
+                        repo.update_step(session, step_model, status="failed", details="Budget exceeded")
+
+                    session.commit()
+                    return
+
+                if budget_check.should_warn:
+                    budget_guard.record_warning(job, budget_check.budget_used_pct, session)
+                    logger.warning(
+                        "budget_warning",
+                        job_id=job_id,
+                        threshold=f"{budget_check.budget_used_pct:.1%}",
+                    )
+                    session.commit()
             coder_agent = CoderAgent(provider_coder, spec, model_coder, settings.dry_run)
             coder_context = json.dumps({"task": job_task, "step": step}, ensure_ascii=False, indent=2)
             coder_prompt = build_prompt(spec.section("CODER-AI"), coder_context)
@@ -276,7 +339,57 @@ def execute_job(self, job_id: str):
                     error=str(primary_error),
                     fallback_model=settings.routing_fallback_model,
                 )
-                # Fallback to gpt-4 on error
+
+                # Handle step failure with loop detection
+                with session_scope() as session:
+                    job = repo.get_job(session, job_id)
+                    step_model = repo.get_step(session, step_id)
+
+                    if step_model:
+                        # Increment retry count
+                        step_model.retry_count = (step_model.retry_count or 0) + 1
+                        step_model.failure_reason = str(primary_error)
+                        repo.update_step(session, step_model, status="failed", details=str(primary_error))
+
+                        # Update job failure tracking
+                        job.last_failed_step_id = step_id
+                        if job.last_failed_step_id == step_id:
+                            job.consecutive_failures = (job.consecutive_failures or 0) + 1
+                        else:
+                            job.consecutive_failures = 1
+                        session.add(job)
+
+                        # Check for loop
+                        loop_check = loop_detector.check_step_retry(job, step_model)
+
+                        if loop_check.should_replan:
+                            logger.warning(
+                                "loop_detected_triggering_replan", job_id=job_id, reason=loop_check.reason
+                            )
+                            session.commit()
+
+                            # Trigger replanning
+                            try:
+                                new_plan = _run_coro(
+                                    trigger_replanning(
+                                        job_id=job_id, reason=loop_check.reason, failed_step_name=step.get("title")
+                                    )
+                                )
+
+                                # Replace remaining plan with new plan
+                                plan = new_plan
+                                logger.info("replan_applied", job_id=job_id, new_steps=len(new_plan))
+
+                                # Continue to next step (from new plan)
+                                continue
+
+                            except Exception as replan_error:
+                                logger.error("replanning_failed", error=str(replan_error))
+                                raise replan_error
+                        else:
+                            session.commit()
+
+                # Try fallback model if no replanning triggered
                 try:
                     result = _run_coro(
                         coder_agent.implement_step(
@@ -287,7 +400,17 @@ def execute_job(self, job_id: str):
                     logger.info("coder_step_fallback_success", fallback_model=model_name)
                 except Exception as fallback_error:
                     logger.error("coder_step_fallback_failed", error=str(fallback_error))
-                    raise fallback_error
+
+                    # Increment retry count again for fallback failure
+                    with session_scope() as session:
+                        step_model = repo.get_step(session, step_id)
+                        if step_model:
+                            step_model.retry_count = (step_model.retry_count or 0) + 1
+                            session.add(step_model)
+                            session.commit()
+
+                    # Continue to next step instead of raising
+                    continue
             diff_text = result.get("diff", "")
             summary = result.get("summary", "")
             if diff_text:
@@ -322,7 +445,14 @@ def execute_job(self, job_id: str):
                 session.add(job)
                 step_model = repo.get_step(session, step_id)
                 if step_model:
+                    # Reset retry count on success
+                    step_model.retry_count = 0
                     repo.update_step(session, step_model, status="completed", details=summary)
+
+                # Record progress and reset failures
+                stall_detector.record_progress(job, session)
+                job.consecutive_failures = 0
+                session.add(job)
                 session.commit()
         if not settings.dry_run and repo_instance is not None:
             with session_scope() as session:

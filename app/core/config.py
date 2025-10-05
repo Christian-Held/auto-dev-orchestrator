@@ -53,6 +53,17 @@ class AppSettings(BaseSettings):
     routing_token_threshold_large: int = Field(5000, alias="ROUTING_TOKEN_THRESHOLD_LARGE")
     routing_fallback_model: str = Field("gpt-4", alias="ROUTING_FALLBACK_MODEL")
 
+    # Budget Guards
+    budget_hard_stop_threshold: float = Field(0.9, alias="BUDGET_HARD_STOP_THRESHOLD")
+
+    # Loop Detection
+    max_step_retries: int = Field(3, alias="MAX_STEP_RETRIES")
+    max_file_edits_per_step: int = Field(5, alias="MAX_FILE_EDITS_PER_STEP")
+    max_replan_attempts: int = Field(2, alias="MAX_REPLAN_ATTEMPTS")
+
+    # Stall Detection
+    stall_timeout_minutes: int = Field(30, alias="STALL_TIMEOUT_MINUTES")
+
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="allow")
 
     @property
