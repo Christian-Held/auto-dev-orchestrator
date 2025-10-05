@@ -19,14 +19,23 @@ class CoderAgent:
         self.dry_run = dry_run
 
     async def implement_step(
-        self, task: str, step: Dict[str, str], *, messages: list[Dict[str, str]] | None = None
+        self,
+        task: str,
+        step: Dict[str, str],
+        *,
+        messages: list[Dict[str, str]] | None = None,
+        model: str | None = None
     ) -> Dict[str, str]:
         if messages is None:
             context = json.dumps({"task": task, "step": step}, ensure_ascii=False, indent=2)
             prompt = build_prompt(self.spec.section("CODER-AI"), context)
             messages = [{"role": "system", "content": prompt}]
-        logger.info("coder_step_request", model=self.model, step=step.get("title"))
-        response = await self.provider.generate(model=self.model, messages=messages)
+
+        # Allow model override (for routing)
+        selected_model = model or self.model
+
+        logger.info("coder_step_request", model=selected_model, step=step.get("title"))
+        response = await self.provider.generate(model=selected_model, messages=messages)
         if self.dry_run:
             logger.info("coder_step_dry_run")
             return {

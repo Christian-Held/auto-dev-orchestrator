@@ -14,6 +14,7 @@ class AppSettings(BaseSettings):
     db_path: Path = Field(Path("./data/orchestrator.db"), alias="DB_PATH")
     openai_api_key: str = Field("", alias="OPENAI_API_KEY")
     openai_base_url: str = Field("https://api.openai.com/v1", alias="OPENAI_BASE_URL")
+    anthropic_api_key: str = Field("", alias="ANTHROPIC_API_KEY")
     model_cto: str = Field("gpt-4.1-mini", alias="MODEL_CTO")
     model_coder: str = Field("gpt-4.1", alias="MODEL_CODER")
     github_token: str = Field("", alias="GITHUB_TOKEN")
@@ -40,6 +41,17 @@ class AppSettings(BaseSettings):
     jit_enable: bool = Field(True, alias="JIT_ENABLE")
     curator_topk: int = Field(12, alias="CURATOR_TOPK")
     curator_min_score: float = Field(0.12, alias="CURATOR_MIN_SCORE")
+
+    # Multi-LLM Routing
+    llm_routing_enabled: bool = Field(False, alias="LLM_ROUTING_ENABLED")
+    default_model_strategy: str = Field("cost_optimized", alias="DEFAULT_MODEL_STRATEGY")
+    model_simple: str = Field("gpt-3.5-turbo", alias="MODEL_SIMPLE")
+    model_medium: str = Field("claude-sonnet-4.5", alias="MODEL_MEDIUM")
+    model_complex: str = Field("claude-opus-4", alias="MODEL_COMPLEX")
+    routing_complexity_threshold_medium: int = Field(3, alias="ROUTING_COMPLEXITY_THRESHOLD_MEDIUM")
+    routing_complexity_threshold_complex: int = Field(7, alias="ROUTING_COMPLEXITY_THRESHOLD_COMPLEX")
+    routing_token_threshold_large: int = Field(5000, alias="ROUTING_TOKEN_THRESHOLD_LARGE")
+    routing_fallback_model: str = Field("gpt-4", alias="ROUTING_FALLBACK_MODEL")
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="allow")
 

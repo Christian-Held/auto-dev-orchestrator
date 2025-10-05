@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from typing import Any, Dict, List, Tuple
 
 
@@ -9,6 +10,16 @@ class LLMResponse:
         self.text = text
         self.tokens_in = tokens_in
         self.tokens_out = tokens_out
+
+
+@dataclass
+class ModelCapability:
+    """Model capability metadata for routing decisions"""
+    name: str
+    complexity_tier: str  # "simple" | "medium" | "complex"
+    cost_per_1m_input: float  # USD per 1M tokens
+    cost_per_1m_output: float  # USD per 1M tokens
+    max_context_tokens: int = 128000  # Default context window
 
 
 class BaseLLMProvider(ABC):

@@ -19,8 +19,10 @@ from app.db import repo
 from app.db.engine import session_scope
 from app.db.models import JobStatus
 from app.git import repo_ops
+from app.llm.litellm_provider import LiteLLMProvider
 from app.llm.openai_provider import OpenAILLMProvider
 from app.llm.provider import BaseLLMProvider, DryRunLLMProvider
+from app.llm.router import LLMRouter
 
 from .celery_app import celery_app
 
@@ -28,8 +30,13 @@ logger = get_logger(__name__)
 
 
 def _select_provider(dry_run: bool) -> BaseLLMProvider:
+    """Select LLM provider based on dry_run flag and routing settings"""
     if dry_run:
         return DryRunLLMProvider()
+    settings = get_settings()
+    if settings.llm_routing_enabled:
+        return LiteLLMProvider()
+    # Fallback to legacy OpenAI provider when routing disabled
     return OpenAILLMProvider()
 
 
@@ -239,7 +246,48 @@ def execute_job(self, job_id: str):
             )
             if context_diag:
                 last_context_diag = context_diag
-            result = _run_coro(coder_agent.implement_step(job_task, step, messages=messages))
+
+            # Route to optimal model if routing enabled
+            router = LLMRouter()
+            estimated_tokens_in = provider_coder.count_tokens(messages)
+            estimated_tokens_out = 2000  # Conservative estimate
+
+            routing_decision = router.select_model(
+                step=step, job=job, estimated_tokens_in=estimated_tokens_in, estimated_tokens_out=estimated_tokens_out
+            )
+
+            model_name = routing_decision.model
+
+            logger.info(
+                "coder_step_routing",
+                step_id=step_id,
+                model=model_name,
+                reason=routing_decision.reason,
+                complexity=routing_decision.complexity_score,
+            )
+
+            # Implement step with routed model, with fallback on error
+            try:
+                result = _run_coro(coder_agent.implement_step(job_task, step, messages=messages, model=model_name))
+            except Exception as primary_error:
+                logger.warning(
+                    "coder_step_primary_model_failed",
+                    model=model_name,
+                    error=str(primary_error),
+                    fallback_model=settings.routing_fallback_model,
+                )
+                # Fallback to gpt-4 on error
+                try:
+                    result = _run_coro(
+                        coder_agent.implement_step(
+                            job_task, step, messages=messages, model=settings.routing_fallback_model
+                        )
+                    )
+                    model_name = settings.routing_fallback_model
+                    logger.info("coder_step_fallback_success", fallback_model=model_name)
+                except Exception as fallback_error:
+                    logger.error("coder_step_fallback_failed", error=str(fallback_error))
+                    raise fallback_error
             diff_text = result.get("diff", "")
             summary = result.get("summary", "")
             if diff_text:

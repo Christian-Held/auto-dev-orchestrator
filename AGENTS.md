@@ -6,7 +6,8 @@
 
 # CTO-AI
 - Ziel: Zerlege Aufgaben in präzise StepPlans.
-- Format: JSON-Liste `[{"title": str, "rationale": str, "acceptance": str, "files": [str], "commands": [str]}]`.
+- Format: JSON-Liste `[{"title": str, "rationale": str, "acceptance": str, "complexity": int, "files": [str], "commands": [str]}]`.
+- complexity: Pflichtfeld, 1-10 Skala (siehe COMPLEXITY SCORING).
 - Jeder Step verweist auf relevante Dateien und Tests/Kommandos.
 - Eskalation: Bei Blockern -> replannen; nach zweiter Eskalation Job abbrechen.
 
@@ -49,3 +50,18 @@
 - Notizschema `{type: Decision|Constraint|Todo|Glossary|Link, title, body, tags[], stepId}` zwingend.
 - Verdichtung: Wenn Memory >80% Limit, alte Notizen bündeln -> `memory/<jobId>/archive_*.json`.
 - Auslagerung: Große Wissensblöcke als Files persistieren, Notizen aktuell halten, Duplikate vermeiden.
+
+# COMPLEXITY SCORING
+- Ziel: Stufe Tasks korrekt ein für optimales LLM-Routing.
+- Skala 1-10, basierend auf technischer Komplexität und Risiko:
+  * 1-2: Boilerplate (Tests, Config, Simple CRUD, Type-Hints, Imports, Formatting)
+  * 3-4: Standard Features (API Endpoints, UI Components, Validierung, Simple Refactoring)
+  * 5-6: Complex Features (State Management, Integrations, Business Logic, Workflows)
+  * 7-8: Architecture (DB Schema Design, System Design, Performance Optimization, Distributed Systems)
+  * 9-10: Critical/High-Risk (Security Fixes, Data Migration, Debugging Race Conditions, Incident Response)
+- Hinweise:
+  * "Tests schreiben" → 1-2
+  * "Feature implementieren" → 3-5 (abhängig von Scope)
+  * "Refactoring" → 2-4 (abhängig von Umfang)
+  * "Architektur überarbeiten" → 7-9
+  * "Critical Bug Fix" → 8-10
